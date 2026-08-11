@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>TREEK - Conectar WhatsApp (Coexistência)</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 480px; margin: 60px auto; text-align: center; }
+  button { background: #1877F2; color: white; border: none; padding: 14px 28px; font-size: 16px; border-radius: 8px; cursor: pointer; }
+  button:hover { background: #145dbf; }
+  #status { margin-top: 20px; font-size: 14px; color: #444; white-space: pre-wrap; text-align: left; background: #f5f5f5; padding: 12px; border-radius: 6px; }
+</style>
+</head>
+<body>
+  <h2>Conectar número da TREEK ao WhatsApp Cloud API</h2>
+  <p>Clique no botão abaixo para iniciar o Embedded Signup com coexistência.</p>
+  <button onclick="launchWhatsAppSignup()">Conectar com Meta</button>
+  <pre id="status"></pre>
+
+  <script>
+    // ====== PREENCHA AQUI ANTES DE USAR ======
+    const APP_ID = "1069969336124355";
+    const CONFIG_ID = "1526676575451287";
+    // ==========================================
+
+    window.fbAsyncInit = function () {
+      FB.init({
+        appId: APP_ID,
+        autoLogAppEvents: true,
+        xfbml: true,
+        version: "v23.0"
+      });
+    };
+
+    function log(msg) {
+      document.getElementById("status").textContent += msg + "\n";
+    }
+
+    // Escuta mensagens que a janela de signup manda de volta (phone_number_id, waba_id, etc)
+    window.addEventListener("message", (event) => {
+      if (!event.origin.endsWith("facebook.com")) return;
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === "WA_EMBEDDED_SIGNUP") {
+          log("Evento recebido: " + JSON.stringify(data, null, 2));
+        }
+      } catch (e) {
+        // ignora mensagens que não são JSON relevante
+      }
+    });
+
+    function launchWhatsAppSignup() {
+      log("Abrindo popup de login da Meta...");
+      FB.login(
+        function (response) {
+          if (response.authResponse) {
+            const code = response.authResponse.code;
+            log("Login concluído. Código de autorização recebido:");
+            log(code);
+            log("\nEnvie esse código para o seu backend trocar por um token de acesso.");
+          } else {
+            log("Login cancelado ou não autorizado.");
+          }
+        },
+        {
+          config_id: CONFIG_ID,
+          response_type: "code",
+          override_default_response_type: true,
+          extras: {
+            setup: {},
+            featureType: "whatsapp_business_app_onboarding",
+            sessionInfoVersion: "3"
+          }
+        }
+      );
+    }
+  </script>
+  <script async defer src="https://connect.facebook.net/pt_BR/sdk.js"></script>
+</body>
+</html>

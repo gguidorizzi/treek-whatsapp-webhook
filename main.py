@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI, Request, Response
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
@@ -47,3 +48,9 @@ async def receive_webhook(request: Request):
 @app.get("/")
 async def health_check():
     return {"status": "ok", "service": "treek-whatsapp-webhook"}
+
+
+@app.get("/connect", response_class=HTMLResponse)
+async def connect_page():
+    with open("connect.html", "r", encoding="utf-8") as f:
+        return f.read()
