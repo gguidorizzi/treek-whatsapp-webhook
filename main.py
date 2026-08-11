@@ -54,3 +54,15 @@ async def health_check():
 async def connect_page():
     with open("connect.html", "r", encoding="utf-8") as f:
         return f.read()
+
+
+@app.get("/privacy", response_class=HTMLResponse)
+async def privacy_page():
+    with open("privacy.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+
+@app.get("/data-deletion", response_class=HTMLResponse)
+async def data_deletion_page():
+    with open("data-deletion.html", "r", encoding="utf-8") as f:
+        return f.read()
